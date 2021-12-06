@@ -1,15 +1,19 @@
-module.exports = {
-  module: {
-    rules: [
-      // ... other rules omitted
+const path = require("path");
 
-      // this will apply to both plain `.scss` files
-      // AND `<style lang="scss">` blocks in `.vue` files
-      {
-        test: /\.scss$/,
-        use: ["vue-style-loader", "css-loader", "sass-loader"],
-      },
-    ],
+module.exports = {
+  chainWebpack: (config) => {
+    const types = ["vue-modules", "vue", "normal-modules", "normal"];
+    types.forEach((type) =>
+      addStyleResource(config.module.rule("stylus").oneOf(type))
+    );
   },
-  // plugin omitted
 };
+
+function addStyleResource(rule) {
+  rule
+    .use("style-resource")
+    .loader("style-resources-loader")
+    .options({
+      patterns: [path.resolve(__dirname, "./src/styles/imports.styl")],
+    });
+}
